@@ -4,7 +4,7 @@ use axum::{response::Html, routing::get, Router};
 async fn main() {
     let app = Router::new().route("/", get(handler));
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:8000").await.unwrap();
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:8080").await.unwrap();
     axum::serve(listener, app).await.unwrap();
 }
 
