@@ -1,9 +1,9 @@
 use axum::{extract::Query, response::Html, routing::get, Router};
+use memoize::memoize;
 use serde::Deserialize;
 
-
 #[derive(Deserialize)]
-struct FibInput{
+struct FibInput {
     val: i32,
 }
 
@@ -20,12 +20,12 @@ async fn handler() -> Html<&'static str> {
     Html("<h1>Hello, World!</h1>")
 }
 
-
 async fn h_fib(input: Query<FibInput>) -> Html<String> {
     let result = fib(input.val);
     Html(format!("<h1>Fibonacci of {} is {}</h1>", input.val, result))
 }
 
+#[memoize]
 fn fib(x: i32) -> i32 {
     if x == 0 {
         return 0;
@@ -33,7 +33,7 @@ fn fib(x: i32) -> i32 {
     if x == 1 {
         return 1;
     }
-    return fib(x - 1) + fib(x - 2)
+    return fib(x - 1) + fib(x - 2);
 }
 
 #[cfg(test)]
@@ -42,8 +42,7 @@ mod tests {
 
     use super::*;
     #[test]
-    fn test_fib(){
-        
+    fn test_fib() {
         let inputs = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
         let outputs = [0, 1, 1, 2, 3, 5, 8, 13, 21, 34];
 

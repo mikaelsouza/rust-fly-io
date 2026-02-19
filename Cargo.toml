@@ -7,3 +7,4 @@ edition = "2021"
 axum = "*"
 tokio = { version = "1.0", features = ["full"]} 
 serde = { version = "*", features = ["derive"] }
+memoize = "0.6.0"
