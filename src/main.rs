@@ -22,32 +22,41 @@ async fn handler() -> Html<&'static str> {
 
 async fn h_fib(input: Query<FibInput>) -> Html<String> {
     let result = fib(input.val);
-    Html(format!("<h1>Fibonacci of {} is {}</h1>", input.val, result))
+    match result {
+        Some(result) => Html(format!("<h1>Fibonacci of {} is {}</h1>", input.val, result)),
+        None => Html(format!(
+            "<h1>Fibonacci of {} is out of range</h1>",
+            input.val
+        )),
+    }
 }
 
 #[memoize]
-fn fib(x: i32) -> i32 {
-    if x == 0 {
-        return 0;
+fn fib(x: i32) -> Option<i32> {
+    match x {
+        0 => Some(0),
+        1 => Some(1),
+        _ => fib(x - 1)?.checked_add(fib(x - 2)?),
     }
-    if x == 1 {
-        return 1;
-    }
-    return fib(x - 1) + fib(x - 2);
 }
 
 #[cfg(test)]
 mod tests {
-    use std::iter::zip;
-
     use super::*;
     #[test]
     fn test_fib() {
-        let inputs = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-        let outputs = [0, 1, 1, 2, 3, 5, 8, 13, 21, 34];
+        let cases = [
+            (0, Some(0)),
+            (1, Some(1)),
+            (6, Some(8)),
+            (9, Some(34)),
+            // Testing the overflow threshold for i32
+            (46, Some(1836311903)),
+            (47, None), // fib(47) overflows i32
+        ];
 
-        for (i, o) in zip(inputs, outputs) {
-            assert_eq!(fib(i), o);
+        for (i, o) in cases {
+            assert_eq!(fib(i), o, "Failed at fib({})", i);
         }
     }
 }
